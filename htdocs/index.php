@@ -17,8 +17,11 @@ $f3->set('DEBUG',2);
 $f3->set('UI','ui/');
 $f3->route('GET /',
 	function() {
-		$content = file_get_contents( "homepage.html" );
-		print render_page( "UK Academic Sessions", $content );
+                $f3=Base::instance();
+
+		$f3->set('html_title', "UK Academic Sessions" );
+		$f3->set('content','homepage.html');
+		print Template::instance()->render( "page-template.html" );
 	}
 );
 $f3->route('GET /ns/*', 
@@ -107,21 +110,21 @@ function render_year_document( $f3, $path, $mode )
 	else
 	{	
 		$title = "UK Academic Session $start_year to $end_year";
+		if( $mode == "uk" ) { $modename = "UK"; }
+		if( $mode == "world" ) { $modename = "International"; }
 		$content = "
 <div><strong>UK Academic Session URI:</strong> http://id.academic-session.data.ac.uk/$start_year-$end_year</div>
-<div><strong>Worldwide Academic Session URI:</strong> http://id.academic-session.data.ac.uk/world/$start_year-$end_year</div>
+<div><strong>International Academic Session URI:</strong> http://id.academic-session.data.ac.uk/world/$start_year-$end_year</div>
 ";
-		print render_page( $title, $content );
+                $f3=Base::instance();
+
+		$f3->set('html_title', "$start_year-$end_year $modename Academic Session" );
+		$f3->set('content','content.html' );
+		$f3->set('html_content',$content );
+		print Template::instance()->render( "page-template.html" );
 	}
 }
 
-function render_page( $title, $content )
-{
-	$page = file_get_contents( "template.html" );
-	$page = preg_replace( "/\\\$CONTENT/", $content, $page );
-	$page = preg_replace( "/\\\$TITLE/", $title, $page );
-	return $page;
-}
 
 
 function turtle_intro()
